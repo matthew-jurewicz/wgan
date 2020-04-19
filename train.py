@@ -17,10 +17,10 @@ data = datasets.ImageFolder(
 )
 
 rand = random.sample(range(len(data)), k=4)
-_, axes = plt.subplots(2, 2)
+_, ax = plt.subplots(2, 2)
 for i in range(4):
     x, _ = data[rand[i]]
-    axes[i // 2][i % 2].imshow(x.numpy().transpose(1, 2, 0))
+    ax[i // 2][i % 2].imshow(x.numpy().transpose(1, 2, 0))
 plt.show()
 
 data = torch.utils.data.DataLoader(
@@ -30,26 +30,27 @@ data = torch.utils.data.DataLoader(
 )
 
 model = torch.hub.load(
-    github='facebookresearch/pytorch_GAN_zoo:hub', 
+    github='facebookresearch/pytorch_GAN_zoo:master', 
     model='DCGAN', 
     pretrained=False, 
     useGPU=torch.cuda.is_available()
 )
 
-model.train()
+fig, ax = plt.subplots(1, 1)
 for i in range(10):
     for j, (x, _) in enumerate(tqdm(data)):
         loss = model.optimizeParameters(x)
 
     z, _ = model.buildNoiseData(n_samples=1)
-    plt.imshow(model.test(z)
+    ax.imshow(model.test(z)[0]
                     .numpy().transpose(1, 2, 0))
+    fig.canvas.draw()
 
-torch.save(model.state_dict(), 'model.pt')
+model.save('model.pt')
 
-model.load_state_dict(torch.load('model.pt'))
-model.eval()
+model.load('model.pt')
 
 z, _ = model.buildNoiseData(n_samples=1)
-plt.imshow(model.test(z)
+plt.imshow(model.test(z)[0]
                 .numpy().transpose(1, 2, 0))
+plt.show()
