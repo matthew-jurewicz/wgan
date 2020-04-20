@@ -33,7 +33,8 @@ model = torch.hub.load(
     github='facebookresearch/pytorch_GAN_zoo:master', 
     model='DCGAN', 
     pretrained=False, 
-    useGPU=torch.cuda.is_available()
+    useGPU=torch.cuda.is_available(), 
+    lambdaGP=10
 )
 
 fig, ax = plt.subplots(1, 1)
